@@ -1,0 +1,16 @@
+/* Brand palette — mirrors the dashboard's accent (src/styles/style.css). */
+:root {
+  --md-primary-fg-color:        #ff5e5b;
+  --md-primary-fg-color--light: #ff817f;
+  --md-primary-fg-color--dark:  #d94643;
+  --md-accent-fg-color:         #d94643;
+}
+
+[data-md-color-scheme="slate"] {
+  --md-accent-fg-color: #ff817f;
+}
+
+/* Status words in tables read as status, not prose. */
+.status-up   { color: #22c55e; font-weight: 600; }
+.status-down { color: #ef4444; font-weight: 600; }
+.status-warn { color: #f59e0b; font-weight: 600; }

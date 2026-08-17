@@ -1,0 +1,98 @@
+site_name: Tracedown
+site_description: Documentation for Tracedown — the self-hosted API monitoring platform
+site_url: https://tracedown.dev/
+
+repo_url: https://github.com/tracedown/tracedown-core-backend
+repo_name: tracedown/tracedown-core-backend
+
+theme:
+  name: material
+  custom_dir: overrides
+  icon:
+    repo: fontawesome/brands/github
+  palette:
+    - scheme: default
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.sections
+    - navigation.expand
+    - navigation.indexes
+    - navigation.top
+    - content.code.copy
+    - search.highlight
+    - toc.follow
+
+extra_css:
+  - stylesheets/extra.css
+
+copyright: Copyright &copy; 2026 Tracedown
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - tables
+  - attr_list
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - md_in_html
+  - toc:
+      permalink: true
+
+nav:
+  - Home: index.md
+  - Installation:
+    - install/index.md
+    - Requirements: install/requirements.md
+    - Quickstart (Docker): install/quickstart.md
+    - Architecture: install/architecture.md
+    - Configuration:
+      - install/configuration.md
+      - Database & Migrations: install/database.md
+    - Probe Agents: install/agents.md
+  - User Manual:
+    - guide/index.md
+    - Concepts: guide/concepts.md
+    - Workspaces & Projects: guide/workspaces-and-projects.md
+    - Services: guide/services.md
+    - Probes:
+      - Writing Probes: guide/writing-probes.md
+      - Variables: guide/variables.md
+      - Reading Results: guide/results.md
+    - Alerting:
+      - Notifications: guide/notifications.md
+      - Silences & Quiet Hours: guide/silences.md
+      - Maintenance Windows: guide/maintenance-windows.md
+    - Users & Permissions: guide/users-and-permissions.md
+    - Your Account: guide/account.md
+  - Administration:
+    - admin/index.md
+    - Security:
+      - Secrets & Encryption: admin/secrets.md
+      - Certificate Authority: admin/certificate-authority.md
+    - Data:
+      - Backup & Restore: admin/backup.md
+      - Retention & Aggregation: admin/retention.md
+    - Operations:
+      - Scaling: admin/scaling.md
+      - Monitoring Tracedown: admin/observability.md
+      - Upgrading: admin/upgrading.md
+      - Troubleshooting: admin/troubleshooting.md
+  - Project:
+    - License: project/license.md
