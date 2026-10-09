@@ -98,8 +98,9 @@ the first time, a `variable.updated` when it writes a different value, each
 with the service scope and the key — never the value. A run that writes the
 same value again announces nothing.
 
-A run writes back at most **100 keys**. Keys beyond the first 100 are ignored,
-and the result-ingestor logs a warning saying how many.
+A run writes back at most as many keys as a service may hold variables —
+`MAX_VARS_PER_RESOURCE`, 100 unless the operator changed it. Keys beyond that
+are ignored, and the result-ingestor logs a warning saying how many.
 
 ## Computed variables
 

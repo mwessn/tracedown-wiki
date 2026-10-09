@@ -153,8 +153,8 @@ masked; see [Variables](api.md#variables).
 |---|---|---|---|
 | `GET` | `/services/{id}/results` | Lists the service's runs, newest first. See [Reading results](api.md#reading-results).<br>Query: `since` (ISO-8601: runs started at or after it); *(0.4.59)* `until` (ISO-8601: runs started at or before it; not before `since`), `status` (`success`, `failure`, `timeout`, `error`, `skipped`; repeated or comma-separated), `trigger` (`schedule` or `manual`), `order` (`desc` default, or `asc`). Times are compared to the second, both bounds inclusive.<br>Errors: 400 `field_invalid` naming the parameter. | `200` Page of [ResultSummary](#resultsummary) |
 | `GET` | `/services/{id}/results/{resultId}` | Returns one run with all of its steps. | `200` [Result](#result) |
-| `GET` | `/services/{id}/results/{resultId}/steps/{stepId}/body` | The response body the step stored, inline, up to 4 MiB. See [Step bodies](api.md#step-bodies) and the answers below. | `200` [StepBody](#stepbody); `204` |
-| `GET` | `/services/{id}/results/{resultId}/steps/{stepId}/body/raw` | The same body as it was stored *(0.4.59)*: the bytes, under the stored content type (`application/octet-stream` when the gateway does not repeat it), as an attachment, up to 32 MiB. `HEAD` answers the headers without reading the body. A client that takes nothing for 20 seconds, or has not finished after 10 minutes, is cut off. | `200` bytes; `204` |
+| `GET` | `/services/{id}/results/{resultId}/steps/{stepId}/body` | The response body the step stored, inline, up to 4 MiB. A client that takes nothing of the answer for 20 seconds, or has not taken all of it after 10 minutes, is cut off. See [Step bodies](api.md#step-bodies) and the answers below. | `200` [StepBody](#stepbody); `204` |
+| `GET` | `/services/{id}/results/{resultId}/steps/{stepId}/body/raw` | The same body as it was stored *(0.4.59)*: the bytes, under the stored content type (`application/octet-stream` when the gateway does not repeat it), as an attachment, up to 32 MiB. `HEAD` answers the headers without reading the body. A client that takes nothing for 20 seconds, or has not taken the whole body after 10 minutes, is cut off. | `200` bytes; `204` |
 
 ### Step body answers
 
@@ -251,7 +251,7 @@ read or write is 404. Changing or removing a binding needs Webhooks Write.
 
 | Method | Path | What it does | Answers |
 |---|---|---|---|
-| `POST` | `/scripts/validate` | Judges a script as a save would, and saves nothing: the Lace validator's findings, then `blocked_probe_target` for each call whose target this installation does not probe, then the verified-domain rules where they apply. With `serviceId`, judged with that service's variables and schedule; read access to the service is enough. Values stored encrypted are used only for a caller with write on the service — for anyone else, a call whose host needs one is listed in `targets.unresolved` and judged by neither rule — and verified-domain coverage is judged only for a caller who may read the organization's domains. A read key may call it; it takes no `Idempotency-Key`.<br>Body: `script` (required, ≤ 65536), `serviceId`.<br>Errors: 404 when `serviceId` names no service the caller may read. | `200` [ScriptValidation](#scriptvalidation) |
+| `POST` | `/scripts/validate` | Judges a script as a save would, and saves nothing: the Lace validator's findings, then `blocked_probe_target` for each call whose target this installation does not probe, then the verified-domain rules where they apply. With `serviceId`, judged with that service's variables and schedule; read access to the service is enough. Values stored encrypted are used only for a caller with write on the service — for anyone else, a call whose host needs one is listed in `targets.unresolved` and judged by neither rule — and verified-domain coverage is judged only for a caller who may read the organization's domains. Without `serviceId` there is no schedule, so the interval rule is not judged and `complete` is false wherever verified domains are asked for. A read key may call it; it takes no `Idempotency-Key`.<br>Body: `script` (required, ≤ 65536), `serviceId`.<br>Errors: 404 when `serviceId` names no service the caller may read. | `200` [ScriptValidation](#scriptvalidation) |
 
 ## Presets
 
@@ -395,8 +395,10 @@ validator's first, then `blocked_probe_target` per refused call, then
 verified-domain limits apply}, `domainsChecked` (whether the verified-domain
 rules were judged: false when the installation does not ask for verified
 domains, or the caller may not read the organization's domains) and `complete`
-(whether everything a save judges was judged — `valid` and `complete` together
-are a save's verdict). Targets are always named as the script writes them,
+(whether everything a save judges was judged — false when a host is
+unresolved, when the verified-domain rules apply and were not checked, or when
+they apply and no `serviceId` was given, since the interval rule needs the
+service's schedule; `valid` and `complete` together are a save's verdict). Targets are always named as the script writes them,
 never with a variable's value in them.
 
 ### Variable

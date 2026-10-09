@@ -497,7 +497,8 @@ inline, in JSON — never as a link to wherever it is stored:
 | `encoding` | `null` when `content` is the body's text as it is. `"base64"` when `content` is the base64 of the stored bytes — for a body that is not UTF-8 text, or text containing control characters other than tab, newline and carriage return. Decode it before use. |
 
 Bodies served this way are capped at **4 MiB** of stored bytes; a larger one
-is refused with 413 `body_too_large`.
+is refused with 413 `body_too_large`. A client that takes nothing of the answer
+for 20 seconds, or has not taken all of it after 10 minutes, is cut off.
 
 `GET …/steps/{stepId}/body/raw` serves the same body **as it was stored** —
 the bytes, not JSON — up to the body store's own limit, 32 MiB:
@@ -513,9 +514,9 @@ It answers with the stored content type when the gateway repeats it
 `Content-Disposition: attachment`, `X-Content-Type-Options: nosniff` and
 `Cache-Control: private, no-store` — a body is whatever the probed endpoint
 sent, so it is never to be rendered or cached as if it were the API's own.
-`HEAD` answers the headers alone, without reading the body. A client that stops
-taking the body is cut off: after 20 seconds without reading any of it, or
-after 10 minutes in all however steadily it reads.
+`HEAD` answers the headers alone, without reading the body. The same bound
+applies: a client that takes nothing for 20 seconds, or has not taken the
+whole body after 10 minutes however steadily it reads, is cut off.
 
 Besides `200`, both endpoints answer `204` when the step has no stored body,
 and 410 `body_gone`, 413 `body_too_large` or 503 `body_store_unavailable` — see
@@ -924,9 +925,11 @@ judges a script exactly as a save would — the Lace validator, then the
 platform's target and verified-domain rules — and saves nothing. With
 `serviceId` it judges it with that service's variables and schedule. `valid`
 says whether anything the key's member can judge would refuse it, and
-`complete` whether that was everything a save judges: it is false when a call's
-host comes from a variable the member may not read, or when the verified-domain
-rules apply and the member cannot read the organization's domains.
+`complete` whether that was everything a save judges. It is false whenever a
+rule could not be judged: a call's host comes from a variable with no value
+here, or one the member may not read; or the verified-domain rules apply and
+the member cannot read the organization's domains, or no `serviceId` was
+given — the interval rule needs a service's schedule.
 
 ```bash
 # Put your own endpoint in place of https://api.example.com/health.

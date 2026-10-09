@@ -405,7 +405,7 @@ down rather than offering the same thing twice.
 
 | Variable | Purpose | Default | Required |
 |---|---|---|---|
-| `MAX_VARS_PER_RESOURCE` | Most variables one resource may hold | `100` | No |
+| `MAX_VARS_PER_RESOURCE` | Most variables one resource may hold. The result-ingestor reads it too — set it on both | `100` | No |
 
 Counted **separately per resource** — per organization, workspace, project,
 service and webhook — so a project at the cap does not stop its services having
@@ -416,6 +416,11 @@ and is the same number for every organization.
 System-managed variables are not counted against it: the defaults seeded at
 organization creation, and the companion variables a config toggle creates.
 Enabling a feature never fails for want of room.
+
+The result-ingestor applies the same number to a script's
+[writeback](../guide/variables.md#writeback): one run writes back at most that
+many keys, and the rest are ignored with a warning. Give the ingestor the same
+value as the gateway.
 
 Deleting a variable frees its slot — the count is of live variables, not of
 everything ever created. A create beyond the cap is refused with
@@ -622,6 +627,7 @@ no Redis B — plus the body-storage settings below.
 | `DATABASE_URL` / `DATABASE_USER` / `DATABASE_PASSWORD` | Postgres connection | See common table | No |
 | `REDIS_A_URL` | Queue to consume from | `redis://localhost:6379` | No |
 | `STORAGE_FILESYSTEM_ROOT` | Root under which agent-written bodies are relocated — must match the agent's `PROBE_AGENT_STORAGE_DIR` | `/data/bodies` | No |
+| `MAX_VARS_PER_RESOURCE` | Most keys one run's writeback may write — the gateway's variable cap, see [Variables](#variables) | `100` | No |
 | `STORAGE_S3_ENDPOINT` | S3-compatible endpoint — presence enables S3 body relocation | *(unset)* | No |
 | `STORAGE_S3_ACCESS_KEY` / `STORAGE_S3_SECRET_KEY` | S3 credentials | *(empty)* | Yes, once the endpoint is set |
 | `STORAGE_S3_BUCKET` | Bucket for relocated bodies | *(unset)* | Yes, once the endpoint is set |

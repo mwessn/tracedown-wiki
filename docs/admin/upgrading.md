@@ -148,7 +148,10 @@ Results recorded before 0.4.59, or during the mixed window, read as
 same value, if you set it at all — and `RUN_REQUEST_EXPIRY_SECONDS` and
 `IDEMPOTENCY_ORG_BUDGET_BYTES`. Every service with a database pool now asks
 PostgreSQL to end sessions left idle inside a transaction for 60 seconds
-(`DB_IDLE_IN_TRANSACTION_TIMEOUT_SECONDS`, `0` for no limit). See
+(`DB_IDLE_IN_TRANSACTION_TIMEOUT_SECONDS`, `0` for no limit). The
+result-ingestor now reads `MAX_VARS_PER_RESOURCE` as well, to cap the keys one
+run's writeback may write; if you set it on the gateway, set it on the ingestor
+too. See
 [Configuration](../install/configuration.md#run-handles-and-idempotent-requests).
 
 **Give long-polls 30 seconds.** `GET /api/public/v1/events` can hold a request
