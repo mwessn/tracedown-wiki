@@ -92,6 +92,15 @@ see [Writing Probes](writing-probes.md).
     Writeback is applied per run, not per call. A value stored anywhere in the
     script lands once the run completes.
 
+Writebacks are announced on the API's [event feed](api.md#event-feed), like a
+change made in the dashboard: a `variable.created` when a run writes a key for
+the first time, a `variable.updated` when it writes a different value, each
+with the service scope and the key — never the value. A run that writes the
+same value again announces nothing.
+
+A run writes back at most **100 keys**. Keys beyond the first 100 are ignored,
+and the result-ingestor logs a warning saying how many.
+
 ## Computed variables
 
 Some variables are maintained by the platform and are read-only. They are
