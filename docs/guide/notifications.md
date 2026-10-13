@@ -49,6 +49,22 @@ The default message names the service and how long it was down
 (`${downtime}`), and the email subject switches to a recovery subject. You do
 not have to write anything for this to happen.
 
+### Timeouts wait for a second run
+
+A timeout is announced only when the run before it was already down. The first
+timeout of a service is recorded like any other result — it shows in the
+history and counts as downtime — but sends no mail and calls no webhook. If the
+next run times out as well, that one is announced; if it succeeds, nothing is
+sent, the recovery included.
+
+The reason is that a timeout, unlike a refused connection or a failed
+assertion, cannot be told apart from trouble on the probing agent's side: a
+stalled route between the agent and your service produces the same result as a
+service that hung. The next run usually comes from a different agent, so a
+second timeout is a second opinion. The cost is that a service which really
+hangs is announced one schedule interval later. Failures of every other kind
+are announced at once.
+
 ### Emitting notifications from a script
 
 Notifications are enabled by the `laceNotifications` extension. When it is
